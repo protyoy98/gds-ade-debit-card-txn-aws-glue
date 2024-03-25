@@ -1,9 +1,3 @@
-# unique (customer_id + customer_name) combination
-# each customer_id can have many cards of many banks
-# two different customers can have same card no - disadvantage!!
-# one card no can be associated with more than one bank - disadvantage!!
-
-
 import csv
 import random
 from faker import Faker
@@ -66,41 +60,6 @@ def generate_card_number():
 def generate_card_type():
     return random.choice(['Visa', 'MasterCard', 'American Express', 'RuPay'])
 
-
-"""   
-# Function to generate sample debit card transaction records
-def generate_transactions(num_records):
-    transactions = []
-    for _ in range(num_records):
-        customer_id = fake.random_int(min=1000, max=9999)
-        name = fake.name()
-        debit_card_number = generate_card_number()
-        debit_card_type = random.choice(['Visa', 'MasterCard', 'American Express'])
-        bank_name = fake.random_element(elements=('Chase', 'Bank of America', 'Wells Fargo', 'Citi', 'JP Morgan'))
-        transaction_date = fake.date_time_between(start_date="-1y", end_date="now").strftime('%Y-%m-%d %H:%M:%S')
-        amount_spend = round(random.uniform(1, 1000), 2)
-        transactions.append([customer_id, name, debit_card_number, debit_card_type, bank_name, transaction_date, amount_spend])
-    return transactions
-
-# Function to write transaction records to a CSV file
-def write_to_csv(transactions, filename):
-    with open(filename, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['customer_id', 'name', 'debit_card_number', 'debit_card_type', 'bank_name', 'transaction_date', 'amount_spend'])
-        for transaction in transactions:
-            writer.writerow(transaction)
-
-# Generate transactions
-num_transactions = 100
-transactions = generate_transactions(num_transactions)
-
-# Write transactions to CSV file
-csv_filename = 'debit_card_transactions.csv'
-write_to_csv(transactions, csv_filename)
-
-print(f"{num_transactions} sample debit card transaction records have been generated and saved to '{csv_filename}'.")
-
-"""
 
 if __name__ == '__main__':
     for day in range(19, 23):
