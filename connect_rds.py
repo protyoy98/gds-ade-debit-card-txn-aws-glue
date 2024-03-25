@@ -5,6 +5,7 @@ from botocore.exceptions import ClientError
 import mysql.connector
 import json
 
+
 # returns username and password of rds from secret manager as a tuple
 def get_rds_uname_pass(secret_name, secret_region):
 
