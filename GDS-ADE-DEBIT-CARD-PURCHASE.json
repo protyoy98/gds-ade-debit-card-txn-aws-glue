@@ -1,0 +1,270 @@
+{
+	"jobConfig": {
+		"name": "GDS-ADE-DEBIT-CARD-PURCHASE",
+		"description": "",
+		"role": "arn:aws:iam::339712975909:role/gds-ade-txn-glue-role",
+		"command": "glueetl",
+		"version": "4.0",
+		"runtime": null,
+		"workerType": "G.1X",
+		"numberOfWorkers": 2,
+		"maxCapacity": 2,
+		"maxRetries": 0,
+		"timeout": 2880,
+		"maxConcurrentRuns": 1,
+		"security": "none",
+		"scriptName": "GDS-ADE-DEBIT-CARD-PURCHASE.py",
+		"scriptLocation": "s3://aws-glue-assets-339712975909-us-east-1/scripts/",
+		"language": "python-3",
+		"spark": true,
+		"sparkConfiguration": "standard",
+		"jobParameters": [
+			{
+				"key": "--job-name",
+				"value": "first glue job for transactions data",
+				"existing": false
+			}
+		],
+		"tags": [],
+		"jobMode": "VISUAL_MODE",
+		"createdOn": "2024-03-24T19:23:16.697Z",
+		"developerMode": false,
+		"connectionsList": [
+			"Mysql connection"
+		],
+		"temporaryDirectory": "s3://aws-glue-assets-339712975909-us-east-1/temporary/",
+		"etlAutoScaling": true,
+		"logging": true,
+		"glueHiveMetastore": true,
+		"etlAutoTuning": false,
+		"metrics": true,
+		"observabilityMetrics": true,
+		"bookmark": "job-bookmark-enable",
+		"sparkPath": "s3://aws-glue-assets-339712975909-us-east-1/sparkHistoryLogs/",
+		"flexExecution": false,
+		"minFlexWorkers": null
+	},
+	"dag": {
+		"node-1711308713438": {
+			"nodeId": "node-1711308713438",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1711339754294"
+			],
+			"name": "AWS Glue Data Catalog",
+			"generatedNodeName": "AWSGlueDataCatalog_node1711308713438",
+			"classification": "DataSink",
+			"type": "Catalog",
+			"streamingBatchInterval": 100,
+			"database": "gds-ade-transactions-metadata",
+			"table": "gds_ade_txn_transactions",
+			"format": "json",
+			"partitionKeys": [],
+			"calculatedType": "",
+			"updateCatalogOptions": "none",
+			"runtimeParameters": [],
+			"codeGenVersion": 2,
+			"schemaChangePolicy": {
+				"enableUpdateCatalog": false
+			}
+		},
+		"node-1711307696567": {
+			"nodeId": "node-1711307696567",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [],
+			"name": "S3 Data Source CSV",
+			"generatedNodeName": "S3DataSourceCSV_node1711307696567",
+			"classification": "DataSource",
+			"type": "Catalog",
+			"isCatalog": true,
+			"database": "gds-ade-transactions-metadata",
+			"table": "gds_ade_txn_s3_raw_gds_ade_raw_transaction_records",
+			"calculatedType": "",
+			"runtimeParameters": [],
+			"codeGenVersion": 2
+		},
+		"node-1711308509942": {
+			"nodeId": "node-1711308509942",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1711308080433"
+			],
+			"name": "Aggregate",
+			"generatedNodeName": "Aggregate_node1711308509942",
+			"classification": "Transform",
+			"type": "Aggregate",
+			"parentsValid": true,
+			"calculatedType": "",
+			"groups": [
+				"customer_id",
+				"debit_card_number",
+				"bank_name"
+			],
+			"aggs": [
+				{
+					"column": "amount_spend",
+					"aggFunc": "sum"
+				}
+			],
+			"codeGenVersion": 2
+		},
+		"node-1711308080433": {
+			"nodeId": "node-1711308080433",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1711307696567"
+			],
+			"name": "Change Schema",
+			"generatedNodeName": "ChangeSchema_node1711308080433",
+			"classification": "Transform",
+			"type": "ApplyMapping",
+			"mapping": [
+				{
+					"toKey": "customer_id",
+					"fromPath": [
+						"customer_id"
+					],
+					"toType": "int",
+					"fromType": "long",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "name",
+					"fromPath": [
+						"name"
+					],
+					"toType": "string",
+					"fromType": "string",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "debit_card_number",
+					"fromPath": [
+						"debit_card_number"
+					],
+					"toType": "bigint",
+					"fromType": "long",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "debit_card_type",
+					"fromPath": [
+						"debit_card_type"
+					],
+					"toType": "string",
+					"fromType": "string",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "bank_name",
+					"fromPath": [
+						"bank_name"
+					],
+					"toType": "string",
+					"fromType": "string",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "transaction_timestamp",
+					"fromPath": [
+						"transaction_date"
+					],
+					"toType": "timestamp",
+					"fromType": "string",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "amount_spend",
+					"fromPath": [
+						"amount_spend"
+					],
+					"toType": "double",
+					"fromType": "double",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "record_date",
+					"fromPath": [
+						"date"
+					],
+					"toType": "date",
+					"fromType": "string",
+					"dropped": false,
+					"children": null
+				}
+			],
+			"parentsValid": true,
+			"calculatedType": "",
+			"codeGenVersion": 2
+		},
+		"node-1711339754294": {
+			"nodeId": "node-1711339754294",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1711308509942"
+			],
+			"name": "Change Schema",
+			"generatedNodeName": "ChangeSchema_node1711339754294",
+			"classification": "Transform",
+			"type": "ApplyMapping",
+			"mapping": [
+				{
+					"toKey": "debit_card_number",
+					"fromPath": [
+						"debit_card_number"
+					],
+					"toType": "long",
+					"fromType": "bigint",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "total_amount_spend",
+					"fromPath": [
+						"sum(amount_spend)"
+					],
+					"toType": "double",
+					"fromType": "double",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "bank_name",
+					"fromPath": [
+						"bank_name"
+					],
+					"toType": "string",
+					"fromType": "string",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "customer_id",
+					"fromPath": [
+						"customer_id"
+					],
+					"toType": "int",
+					"fromType": "int",
+					"dropped": false,
+					"children": null
+				}
+			],
+			"parentsValid": true,
+			"calculatedType": "",
+			"codeGenVersion": 2
+		}
+	},
+	"hasBeenSaved": false
+}
